@@ -1,24 +1,18 @@
 """Representations and Inference for Logic (Chapters 7-9, 12)
-
 Covers both Propositional and First-Order Logic. First we have four
 important data types:
-
     KB            Abstract class holds a knowledge base of logical expressions
     KB_Agent      Abstract class subclasses agents.Agent
     Expr          A logical expression
     substitution  Implemented as a dictionary of var:value pairs, {x:1, y:x}
-
 Be careful: some functions take an Expr as argument, and some take a KB.
 Then we implement various functions for doing logical inference:
-
     pl_true          Evaluate a propositional logical sentence in a model
     tt_entails       Say if a statement is entailed by a KB
     pl_resolution    Do resolution on propositional sentences
     dpll_satisfiable See if a propositional sentence is satisfiable
     WalkSAT          (not yet implemented)
-
 And a few other functions:
-
     to_cnf           Convert to conjunctive normal form
     unify            Do unification of two FOL sentences
     diff, simp       Symbolic differentiation and simplification
@@ -130,14 +124,12 @@ class Expr:
       N-ary (0 or more args) op:
         '&', '|', representing conjunction and disjunction
         A symbol, representing a function term or FOL proposition
-
     Exprs can be constructed with operator overloading: if x and y are Exprs,
     then so are x + y and x & y, etc.  Also, if F and x are Exprs, then so is
     F(x); it works by overloading the __call__ method of the Expr F.  Note
     that in the Expr that is created by F(x), the op is the str 'F', not the
     Expr F.   See http://www.python.org/doc/current/ref/specialnames.html
     to learn more about operator overloading in Python.
-
     WARNING: x == y and x != y are NOT Exprs.  The reason is that we want
     to write code that tests 'if x == y:' and if x == y were the same
     as Expr('==', x, y), then the result would always be true; not what a
@@ -151,7 +143,6 @@ class Expr:
         (3) (x % y) and (x ^ y).
             It is very ugly to have (x % y) mean (x <=> y), but we need
             SOME operator to make (2) work, and this seems the best choice.
-
     WARNING: if x is an Expr, then so is x + 1, because the int 1 gets
     coerced to an Expr by the constructor.  But 1 + x is an error, because
     1 doesn't know how to add an Expr.  (Adding an __radd__ method to Expr
@@ -1126,18 +1117,14 @@ False
 >>> kb.retract(B)
 >>> kb.ask(C)
 False
-
 >>> pl_true(P, {})
 >>> pl_true(P | Q, {P: True})
 True
-
 # Notice that the function pl_true cannot reason by cases:
 >>> pl_true(P | ~P)
-
 # However, tt_true can:
 >>> tt_true(P | ~P)
 True
-
 # The following are tautologies from [Fig. 7.11]:
 >>> tt_true("(A & B) <=> (B & A)")
 True
@@ -1163,17 +1150,14 @@ True
 True
 >>> tt_true("(A | (B & C)) <=> ((A | B) & (A | C))")
 True
-
 # The following are not tautologies:
 >>> tt_true(A & ~A)
 False
 >>> tt_true(A & B)
 False
-
 ### An earlier version of the code failed on this:
 >>> dpll_satisfiable(A & ~B & C & (A | ~D) & (~E | ~D) & (C | ~D) & (~A | ~F) & (E | ~F) & (~D | ~F) & (B | ~C | D) & (A | ~E | F) & (~A | E | D))
 {B: False, C: True, A: True, F: False, D: True, E: False}
-
 ### [Fig. 7.13]
 >>> alpha = expr("~P12")
 >>> to_cnf(Fig[7,13] & ~alpha)
@@ -1182,18 +1166,14 @@ False
 True
 >>> pl_resolution(PropKB(Fig[7,13]), alpha)
 True
-
 ### [Fig. 7.15]
 >>> pl_fc_entails(Fig[7,15], expr('SomethingSilly'))
 False
-
 ### Unification:
 >>> unify(x, x, {})
 {}
 >>> unify(x, 3, {})
 {x: 3}
-
-
 >>> to_cnf((P&Q) | (~P & ~Q))
 ((~P | P) & (~Q | P) & (~P | Q) & (~Q | Q))
 """
