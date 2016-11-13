@@ -1,3 +1,40 @@
+"""Implement Agents and Environments (Chapters 1-2).
+
+The class hierarchies are as follows:
+
+Thing ## A physical object that can exist in an environment
+    Agent
+        Wumpus
+    Dirt
+    Wall
+    ...
+
+Environment ## An environment holds objects, runs simulations
+    XYEnvironment
+        VacuumEnvironment
+        WumpusEnvironment
+
+An agent program is a callable instance, taking percepts and choosing actions
+    SimpleReflexAgentProgram
+    ...
+
+EnvGUI ## A window with a graphical representation of the Environment
+
+EnvToolbar ## contains buttons for controlling EnvGUI
+
+EnvCanvas ## Canvas to display the environment of an EnvGUI
+
+"""
+
+# TO DO:
+# Implement grabbing correctly.
+# When an object is grabbed, does it still have a location?
+# What if it is released?
+# What if the grabbed or the grabber is deleted?
+# What if the grabber moves?
+#
+# Speed control in GUI does not have any effect -- fix it.
+
 from utils import *
 import random, copy
 
