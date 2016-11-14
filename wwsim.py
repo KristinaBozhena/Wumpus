@@ -108,7 +108,7 @@ class Simulation:
                 if (randint(1, 5) == 3) and ((r != 3) or (c != 0)):
                     self.pits['room'+str(r)+str(c)] = True
                     # Set pit percepts
-                    self.set_percepts(r, c, 'pit')
+                    self.set_percepts(r, c, 'pit')   
                 else:
                     self.pits['room'+str(r)+str(c)] = False
 
@@ -282,7 +282,7 @@ class Display:
             return PhotoImage(file="Images/emptyroom.gif")
 
     def __init__(self, master, simulation):
-        frame = Frame(master, width = 700, height = 500)
+        frame = Frame(master, width = 700, height = 410)
         frame.pack()
         self.grid = {}
         self.score = StringVar()
@@ -295,27 +295,27 @@ class Display:
         self.arrowStatus.set('Available')
         self.agentDirection.set('Right')
         self.percepts.set(str(simulation.percepts['room30']))
-        theScoreDis = Label(master, font=(FONTTYPE, 16), text="Performance:")
-        lastMoveDis = Label(master, font=(FONTTYPE, 16), text="Last Move:")
+        theScoreDis = Label(master, font=(FONTTYPE, 16), text="Score:")
+#        lastMoveDis = Label(master, font=(FONTTYPE, 16), text="Last Move:")
         performanceDis = Label(master, font=(FONTTYPE, 14), textvariable=self.score)
-        pastMoveDis = Label(master, font=(FONTTYPE, 14), textvariable=self.pastMove)
-        arrowTitle = Label(master, font=(FONTTYPE, 16), text="Arrow Status:")
+#        pastMoveDis = Label(master, font=(FONTTYPE, 14), textvariable=self.pastMove)
+        arrowTitle = Label(master, font=(FONTTYPE, 16), text="Shoot:")
         self.arrowStatusDis = Label(master, font=(FONTTYPE, 14), fg='Green', textvariable=self.arrowStatus)
-        perceptsTitle = Label(master, font=(FONTTYPE, 16), text="Current Percepts:")
+        perceptsTitle = Label(master, font=(FONTTYPE, 16), text="Percepts:")
         perceptsDis = Label(master, font=(FONTTYPE, 14), textvariable=self.percepts)
-        agentDirectionTitle = Label(master, font=(FONTTYPE, 16), text = "Agent Facing:")
-        agentDirectionDis = Label(master, font=(FONTTYPE, 14), textvariable=self.agentDirection)
-        self.goldStatus = Label(master, font=(FONTTYPE, 16), fg='Gold', text = "Agent has gold!")
+#        agentDirectionTitle = Label(master, font=(FONTTYPE, 16), text = "Agent Facing:")
+#        agentDirectionDis = Label(master, font=(FONTTYPE, 14), textvariable=self.agentDirection)
+#        self.goldStatus = Label(master, font=(FONTTYPE, 16), fg='Gold', text = "Agent has gold!")
         performanceDis.place(x = 420, y = 25)
         theScoreDis.place(x = 420, y = 0)
         arrowTitle.place(x = 420, y = 75)
         self.arrowStatusDis.place(x = 420, y = 100)
-        lastMoveDis.place(x = 420, y = 150)
-        pastMoveDis.place(x = 420, y = 175)
-        perceptsTitle.place(x = 5, y = 420)
-        perceptsDis.place(x = 5, y = 445)
-        agentDirectionTitle.place(x = 420, y = 285)
-        agentDirectionDis.place(x = 420, y = 312)
+#       lastMoveDis.place(x = 420, y = 150)
+#        pastMoveDis.place(x = 420, y = 175)
+        perceptsTitle.place(x = 420, y = 200)
+        perceptsDis.place(x = 420, y = 225)
+#        agentDirectionTitle.place(x = 420, y = 285)
+#        agentDirectionDis.place(x = 420, y = 312)
 
         for r in range(ROWS):
             for c in range(COLUMNS):
@@ -370,16 +370,16 @@ class Display:
         self.arrowStatusDis.config(fg='Green')
         currentPercepts = sim.percepts['room'+str(sim.agentPos[0])+str(sim.agentPos[1])]
         self.percepts.set(str(currentPercepts))
-        self.goldStatus.place_forget()
+        # self.goldStatus.place_forget()
         
 
 
 arglist = sys.argv
 if (len(sys.argv) == 2):
     if (arglist[1].lower() == '-gui'):
-        print('Running GUI...')
+        #print('Running GUI...')
         root = Tk()
-        root.wm_title("Wumpus World Simulation")
+        root.wm_title("Wumpus")
         sim = Simulation(ROWS, COLUMNS, 0)
         sim.generate_simulation()
         app = Display(root, sim)
@@ -391,7 +391,7 @@ if (len(sys.argv) == 2):
             eaten.place_forget()
             fell.place_forget()
             climbOut.place_forget()
-            makeMove.place(x = 420, y = 225)
+            makeMove.place(x = 420, y = 150)
         def updateSim():
             sim.move()
             sim.update_score()
@@ -468,76 +468,76 @@ if (len(sys.argv) == 2):
             app.update_move(sim)
 
         makeMove = Button(root, text = "Move", font = (FONTTYPE, 14), command = updateSim)
-        makeMove.place(x = 420, y = 225)
+        makeMove.place(x = 420, y = 150)
 
         reset = Button(root, text = "Reset", font = (FONTTYPE, 14), command = resetGame)
-        eaten = Label(root, text = "WUMPUS ATE AGENT", fg = 'Red', font = (FONTTYPE, 16))
-        climbOut = Label(root, text = "Player climbed out", fg = 'Green', font = (FONTTYPE, 18))
-        fell = Label(root, text = "AGENT FELL IN PIT", fg = 'Red', font = (FONTTYPE, 16))
+        eaten = Label(root, text = "WUMPUS WIN", fg = 'Red', font = (FONTTYPE, 16))
+        climbOut = Label(root, text = "Player win", fg = 'Green', font = (FONTTYPE, 18))
+        fell = Label(root, text = "Mission failed", fg = 'Red', font = (FONTTYPE, 16))
         
 
 
-        reset.place(x = 420, y = 435)
+        reset.place(x = 420, y = 275)
 
         root.mainloop()
-    elif (arglist[1].lower() == '-nongui'):
-        print('Running Non-GUI...')
-        print('\n')
-        sim = Simulation(ROWS, COLUMNS, 0)
-        sim.generate_simulation()
-        wl = sim.wumpusLoc
-        gl = sim.goldLocation
-        pl = []
-        for i in range(4):
-            for j in range(4):
-                if sim.pits['room'+str(i)+str(j)] is True:
-                    pl.append((i, j))
-        moveCount = 0
+#    elif (arglist[1].lower() == '-nongui'):
+#        print('Running Non-GUI...')
+#        print('\n')
+#        sim = Simulation(ROWS, COLUMNS, 0)
+#        sim.generate_simulation()
+#        wl = sim.wumpusLoc
+#        gl = sim.goldLocation
+#        pl = []
+#        for i in range(4):
+#            for j in range(4):
+#                if sim.pits['room'+str(i)+str(j)] is True:
+#                    pl.append((i, j))
+#        moveCount = 0
 
-        print('START OF SIMULATION')
-        while (sim.terminal_test() is not True):
-            print('------------------------------------------------------------------')
-            print 'Move: ', moveCount
-            print 'Last Action: ', sim.lastMove
-            print('\n')
-            print('Wumpus World Item Locations:')
-            print 'Wumpus Location: ', wl, '   Gold Location: ', gl
-            print 'Pit Locations: ', str(pl)
-            print('\n')
-            print('Agent Info:')
-            print 'Position: ', sim.agentPos, '   Facing: ', sim.agentFacing
-            print 'Has Gold: ', str(sim.hasGold), '   Arrow: ', sim.arrow
-            print('\n')
-            print('Simlulation Current States:')
-            print 'Wumpus Alive: ', str(sim.wumpusAlive), '   Performance: ', sim.score
-            print 'Current Percepts: ', str(sim.percepts['room'+str(sim.agentPos[0])+str(sim.agentPos[1])])
-            sim.move()
-            sim.update_score()
-            moveCount = moveCount + 1
-        print('------------------------------------------------------------------')
-        print 'Last Action: ', sim.lastMove
-        print('GAME OVER')
-        print('\n')
-        if sim.lastMove.lower() == 'climb':
-            print('Agent has climbed out of cave.')
-        elif sim.agentPos == sim.wumpusLoc:
-            print('Agent was eaten by the wumpus and died!')
-        else:
-            print('Agent fell into pit and died!')
-        print('\n')
-        print 'Final Performance: ', sim.score
-
-    elif (arglist[1].lower() == '-help'):
-        print('------------------------------------------------------------------')
-        print('This python program runs a simulation of Wumpus World.')
-        print('\n')
-        print('To run the GUI represented version, run the following command:')
-        print('>\tpython wwsim.py -gui')
-        print('\n')
-        print('To run the Non-GUI version, run the following command:')
-        print('>\tpython wwsim.py -nongui')
-        print('------------------------------------------------------------------')
-    else:
-        raise Exception('Invalid command-line argument. Run \'python wwsim.py -help\' for help.');
-else:
-    raise Exception('Invalid command-line call. Run \'python wwsim.py -help\' for help.');
+#        print('START OF SIMULATION')
+#        while (sim.terminal_test() is not True):
+#            print('------------------------------------------------------------------')
+#            print 'Move: ', moveCount
+#            print 'Last Action: ', sim.lastMove
+#            print('\n')
+#            print('Wumpus World Item Locations:')
+#            print 'Wumpus Location: ', wl, '   Gold Location: ', gl
+#            print 'Pit Locations: ', str(pl)
+#            print('\n')
+#            print('Agent Info:')
+#            print 'Position: ', sim.agentPos, '   Facing: ', sim.agentFacing
+#            print 'Has Gold: ', str(sim.hasGold), '   Arrow: ', sim.arrow
+#            print('\n')
+#            print('Simlulation Current States:')
+#            print 'Wumpus Alive: ', str(sim.wumpusAlive), '   Performance: ', sim.score
+#            print 'Current Percepts: ', str(sim.percepts['room'+str(sim.agentPos[0])+str(sim.agentPos[1])])
+#            sim.move()
+#            sim.update_score()
+#            moveCount = moveCount + 1
+#        print('------------------------------------------------------------------')
+#        print 'Last Action: ', sim.lastMove
+#        print('GAME OVER')
+#        print('\n')
+#        if sim.lastMove.lower() == 'climb':
+#            print('Agent has climbed out of cave.')
+#        elif sim.agentPos == sim.wumpusLoc:
+#            print('Agent was eaten by the wumpus and died!')
+#        else:
+#            print('Agent fell into pit and died!')
+#        print('\n')
+#        print 'Final Performance: ', sim.score
+#
+#    elif (arglist[1].lower() == '-help'):
+#        print('------------------------------------------------------------------')
+#        print('This python program runs a simulation of Wumpus World.')
+#        print('\n')
+#        print('To run the GUI represented version, run the following command:')
+#        print('>\tpython wwsim.py -gui')
+#        print('\n')
+#        print('To run the Non-GUI version, run the following command:')
+#        print('>\tpython wwsim.py -nongui')
+#        print('------------------------------------------------------------------')
+#    else:
+#        raise Exception('Invalid command-line argument. Run \'python wwsim.py -help\' for help.');
+#else:
+#    raise Exception('Invalid command-line call. Run \'python wwsim.py -help\' for help.');
