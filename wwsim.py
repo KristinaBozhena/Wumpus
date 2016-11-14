@@ -94,20 +94,20 @@ class Simulation:
         self.wumpusLoc = (randint(0, 3), randint(0, 3))
         while (self.wumpusLoc == (3, 0)):
             self.wumpusLoc = (randint(0, 3), randint(0, 3))
-        # Set wumpus percepts
+        
         self.set_percepts(self.wumpusLoc[0], self.wumpusLoc[1], 'wumpus')
-        # Set gold location
+
         self.goldLocation = (randint(0, 3), randint(0, 3))
         while (self.goldLocation == (3, 0)) or (self.goldLocation == self.wumpusLoc):
             self.goldLocation = (randint(0, 3), randint(0, 3))
-        # Set gold percepts
+
         self.set_percepts(self.goldLocation[0], self.goldLocation[1], 'gold')
-        # Generate pits
+
         for r in range(self.rowSize):
             for c in range(self.colSize):
                 if (randint(1, 5) == 3) and ((r != 3) or (c != 0)):
                     self.pits['room'+str(r)+str(c)] = True
-                    # Set pit percepts
+
                     self.set_percepts(r, c, 'pit')   
                 else:
                     self.pits['room'+str(r)+str(c)] = False
