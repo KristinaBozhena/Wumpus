@@ -1,5 +1,11 @@
 """Implement Agents and Environments (Chapters 1-2).
+<<<<<<< HEAD
 The class hierarchies are as follows:
+=======
+
+The class hierarchies are as follows:
+
+>>>>>>> origin/master
 Thing ## A physical object that can exist in an environment
     Agent
         Wumpus
@@ -280,6 +286,10 @@ class Environment(object):
 class XYEnvironment(Environment):
     """This class is for environments on a 2D plane, with locations
     labelled by (x, y) points, either discrete or continuous.
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
     Agents perceive things within a radius.  Each agent in the
     environment has a .location slot which should be a location such
     as (0, 1), and a .holding slot, which should be a list of things
@@ -360,6 +370,10 @@ class XYEnvironment(Environment):
     def add_observer(self, observer):
         """Adds an observer to the list of observers.
         An observer is typically an EnvGUI.
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
         Each observer is notified of changes in move_to and add_thing,
         by calling the observer's methods thing_moved(thing)
         and thing_added(thing, loc)."""

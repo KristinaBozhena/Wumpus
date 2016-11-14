@@ -19,6 +19,7 @@ from logic import expr, dpll_satisfiable
 from random import randint
 
 def get_neighbors(r, c):
+#    Returns a list of the neighbors of position (r, c).
     neighbors = set()
     if (r + 1) in range(4):
         neighbors.add((r+1, c))
@@ -34,8 +35,10 @@ def get_neighbors(r, c):
 class WWKB():
 
     def __init__(self):
+        # Knows there is no pit or wumpus in the starting spot
         self.knows = expr('~P30 & ~W30')
 
+        # Lists of initial sentences
         templist = []        
         for x in range(4):
             for y in range(4):
@@ -93,9 +96,11 @@ class WWAgent:
         self.unsureGoal = False
         self.percepts = (None, None, None, None, None)
         self.knownWorld = [[[0 for x in range(5)] for x in range(4)] for x in range(4)]
+        #print("New agent created")
 
     def update(self, percept):
         self.percepts = percept
+        #[stench, breeze, glitter, bump, scream]
 
     def update_stats(self, pastAction):
         if (self.percepts[4] == 'scream'):
@@ -164,7 +169,10 @@ class WWAgent:
                     pos = v
                     break
         path.append(goal)
-
+        #print 'Goal: ', goal
+        #print "Path: ", path
+        # path created
+        # build plan backwards
         for p in path:
             if (p[0] - currPos[0]) > 0:
                 face = 2
@@ -176,6 +184,7 @@ class WWAgent:
                 else:
                     face = 3
             dif = face - currFace
+            # handle facing direction
             if dif != 0:
                 numTurn = abs(dif)
                 if abs(dif) > 2:
@@ -189,17 +198,22 @@ class WWAgent:
                 currFace = face
             plan.append('move')
             currPos = p
+        # put plan in correct order
         plan.reverse()
+        #print 'Plan: ', plan
         
         return plan
 
     def action(self):
         self.update_stats(self.lastAction)
         per = self.percepts
+        # Update knowledge base
         if self.position not in self.visited:
+            # print('update kb')
             self.visited.add(self.position)
             pos = self.position
             lpos = self.lastPos
+            #print(pos)
             self.knownWorld[pos[0]][pos[1]] = self.percepts
             if (self.percepts[0] == 'stench'):
                 toTell = 'S%s%s' % (pos[0], pos[1])
@@ -220,7 +234,10 @@ class WWAgent:
             self.kb.tell(expr(toTell1))
             self.kb.tell(expr(toTell2))
 
+            # Using corner logic
+            # UPDATE SURROUNDINGS
             temp = get_neighbors(pos[0], pos[1]) - self.visited
+            #print "surrounding-visited: ", temp
             temp = temp - self.safe
             temp = temp - self.notsafe
             tempS = set()
@@ -232,6 +249,7 @@ class WWAgent:
                 self.unsure |= temp
             tempF = self.unsure.copy()
             if len(self.visited) > 1:
+                # add unsure locations as either safe or unsafe
                 for f in tempF:
                     if self.kb.ask(expr('(P%s%s)' % (f[0], f[1]))):
                         self.unsure.remove(f)
@@ -251,6 +269,12 @@ class WWAgent:
             if len(tempN) > 0:
                 self.notsafe |= tempN
             self.safe = self.safe - self.visited
+            #
+            #
+            #print "safe list: ", self.safe
+            #print 'danger list: ', self.notsafe
+            #print 'unsure list: ', self.unsure
+            #
 
         if (self.start is True) and (self.percepts[0] == 'stench'):
             action = 'shoot'
@@ -259,8 +283,12 @@ class WWAgent:
         elif (self.position == (3, 0)) and ((self.hasGold is True) or (self.escape is True)):
             action = 'climb'
         elif (len(self.plan) > 0):
+            # TAKE ACTION FROM PLAN
             action = self.plan.pop()
+            #print "plan:action: ", action
         else:
+            # CREATE PLAN
+            # If the agent has gold his next goal should be the exit (start square)
             posGoals = None
             if self.hasGold is True:
                 tempGoal = (3, 0)
@@ -280,12 +308,16 @@ class WWAgent:
             else:
                 tempGoal = (3, 0)
                 self.unsureGoal = False
+            #print "Goal: ", tempGoal
             self.plan = self.create_plan(tempGoal)
+            #print "Plan: ", self.plan
+            # Shoot arrow before final move to make sure 
             if (self.unsureGoal is True) and (len(self.plan) == 1) and \
                 (self.percepts[0] == 'stench') and (self.arrow == 1):
                 action = 'shoot'
             else:
                 action = self.plan.pop()
+            #print "pc:action: ", action
 
         self.start = False
         self.lastAction = action

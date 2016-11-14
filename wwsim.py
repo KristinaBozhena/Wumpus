@@ -1,41 +1,30 @@
 
-"""Implement Agents and Environments (Chapters 1-2).
+# ECE 4524 Problem Set 2
+# File Name: wwsim.py
+# Author: Greg Scott
+#
+# Includes classes for the simulation and the Tkinter display of the simulation.
+# Also includes code to process the command-line input and run the program accordingly.
 
-The class hierarchies are as follows:
 
-Thing ## A physical object that can exist in an environment
-    Agent
-        Wumpus
-    Dirt
-    Wall
-    ...
-
-Environment ## An environment holds objects, runs simulations
-    XYEnvironment
-        VacuumEnvironment
-        WumpusEnvironment
-
-An agent program is a callable instance, taking percepts and choosing actions
-    SimpleReflexAgentProgram
-    ...
-
-EnvGUI ## A window with a graphical representation of the Environment
-
-EnvToolbar ## contains buttons for controlling EnvGUI
-
-EnvCanvas ## Canvas to display the environment of an EnvGUI
-
-"""
 
 from wwagent import *
 import sys
 from Tkinter import *
 from random import randint
 
+# in your inner loop use it thus (just an example, I would probably use a named tuple)
+#
+#wwagent.update(percept) # update the agent with the current percept
+#action = wwagent.action() # get the next action to take from the agent
+
+# Global Constants
 COLUMNS = 4
 ROWS = 4
 FONTTYPE = "Purisa"
 
+# SET UP CLASS AND METHODS HERE
+# Simulation class for running the underlying factors of the simulation
 class Simulation:
 
     def __init__(self, rowSize, colSize, score):
@@ -44,8 +33,8 @@ class Simulation:
         self.agent = WWAgent()
         self.score = score
         self.lastMove = 'None'
-        self.lastPos = (COLUMNS-1, 0)
-        self.agentPos = (ROWS-1, 0)
+        self.lastPos = (3, 0)
+        self.agentPos = (3, 0)
         self.agentFacing = 'right'
         self.arrow = 1
         self.wumpusAlive = True
@@ -64,6 +53,7 @@ class Simulation:
             self.percepts['room'+str(r)+str(c)] = (p[0], p[1], 'glitter', p[3], p[4])
         if (item == 'wumpus'):
             p = self.percepts['room'+str(r)+str(c)]
+            #self.percepts['room'+str(r)+str(c)] = ('stench', p[1], p[2], p[3], p[4])
             if ((r - 1) >= 0):
                 p = self.percepts['room'+str(r-1)+str(c)]
                 self.percepts['room'+str(r-1)+str(c)] = ('stench', p[1], p[2], p[3], p[4])
@@ -91,6 +81,7 @@ class Simulation:
                 self.percepts['room'+str(r)+str(c+1)] = (p[0], 'breeze', p[2], p[3], p[4])
 
     def generate_simulation(self):
+        # Set wumpus location
         self.wumpusLoc = (randint(0, 3), randint(0, 3))
         while (self.wumpusLoc == (3, 0)):
             self.wumpusLoc = (randint(0, 3), randint(0, 3))
@@ -245,6 +236,8 @@ class Simulation:
         self.agent_move(action)
 
 
+
+# Display class for running and modifying the GUI
 class Display:
 
     score = None
@@ -255,6 +248,7 @@ class Display:
     agentDirection = None
 
     def set_room(self, r, c, sim):
+        # Returns agent image
         if (sim.agentPos[0] == r) and (sim.agentPos[1] == c):
             if (sim.agentFacing.lower() == 'right'):
                 return PhotoImage(file="Images/agent-right.gif")
@@ -264,20 +258,25 @@ class Display:
                 return PhotoImage(file="Images/agent-left.gif")
             else:
                 return PhotoImage(file="Images/agent-down.gif")
+        # Returns start image
         elif (r == 3) and (c == 0):
             return PhotoImage(file="Images/start.gif")
+        # Returns wumpus
         elif (r == sim.wumpusLoc[0]) and (c == sim.wumpusLoc[1]):
             if (sim.pits['room'+str(r)+str(c)]):
                 return PhotoImage(file="Images/pit-wumpus.gif")
             else:
                 return PhotoImage(file="Images/live-wumpus.gif")
+        # Returns gold and pit or gold
         elif (r == sim.goldLocation[0]) and (c == sim.goldLocation[1]):
             if (sim.pits['room'+str(r)+str(c)]):
                 return PhotoImage(file="Images/gold-pit.gif")
             else:
                 return PhotoImage(file="Images/gold.gif")
+        # Returns a pit
         elif (sim.pits['room'+str(r)+str(c)]):
             return PhotoImage(file="Images/pit.gif")
+        # Returns an empty room
         else:
             return PhotoImage(file="Images/emptyroom.gif")
 
@@ -317,6 +316,7 @@ class Display:
 #        agentDirectionTitle.place(x = 420, y = 285)
 #        agentDirectionDis.place(x = 420, y = 312)
 
+        #creating the initial grid
         for r in range(ROWS):
             for c in range(COLUMNS):
                 tkimage = self.set_room(r, c, simulation)
@@ -324,6 +324,7 @@ class Display:
                 self.grid['room'+str(r)+str(c)].image = tkimage
                 self.grid['room'+str(r)+str(c)].place(x = c*100 + c*2, y = r*100 + r*2)
 
+        #initializations
     def update_move(self, sim):
         self.score.set(str(sim.score))
         self.pastMove.set(sim.lastMove)
@@ -374,16 +375,24 @@ class Display:
         
 
 
+# Interpret command-line call with arguments
+
 arglist = sys.argv
 if (len(sys.argv) == 2):
     if (arglist[1].lower() == '-gui'):
+<<<<<<< HEAD
         #print('Running GUI...')
+=======
+        print('Running GUI...')
+        # RUN SIMULATION WITH GUI DISPLAY
+>>>>>>> origin/master
         root = Tk()
         root.wm_title("Wumpus")
         sim = Simulation(ROWS, COLUMNS, 0)
         sim.generate_simulation()
         app = Display(root, sim)
 
+        # Updates the sim with each move
         def resetGame():
             sim.reset_stats(0)
             sim.generate_simulation()
@@ -406,6 +415,7 @@ if (len(sys.argv) == 2):
                 makeMove.place_forget()
             app.update_move(sim)
 
+        # Methods for the buttons to operate the agent manually
         def movePlayer():
             sim.agent_move('move')
             sim.update_score()
@@ -466,9 +476,26 @@ if (len(sys.argv) == 2):
                     fell.place(x = 420, y = 400)
                 makeMove.place_forget()
             app.update_move(sim)
-
+        # The move button
         makeMove = Button(root, text = "Move", font = (FONTTYPE, 14), command = updateSim)
         makeMove.place(x = 420, y = 150)
+
+#       BELOW ARE BUTTONS FOR MANUALLY CONTROLLING THE AGENT
+#       They can be used for testing the simulation runs properly
+#       Uncomment the following lines to use them
+#
+#        go = Button(root, text = "Go", font = (FONTTYPE, 14), command = movePlayer)
+#        go.place(x = 470, y = 350)
+#        left = Button(root, text = "Left", font = (FONTTYPE, 14), command = moveLeft)
+#        left.place(x = 420, y = 350)
+#        right = Button(root, text = "Right", font = (FONTTYPE, 14), command = moveRight)
+#        right.place(x = 515, y = 350)
+#        toGrab = Button(root, text = "Grab", font = (FONTTYPE, 14), command = grab)
+#        toGrab.place(x = 500, y = 435)
+#        toClimb = Button(root, text = "Climb", font = (FONTTYPE, 14), command = climb)
+#        toClimb.place(x = 570, y = 435)
+#        toShoot = Button(root, text = "Shoot", font = (FONTTYPE, 14), command = shoot)
+#        toShoot.place(x = 420, y = 390)
 
         reset = Button(root, text = "Reset", font = (FONTTYPE, 14), command = resetGame)
         eaten = Label(root, text = "WUMPUS WIN", fg = 'Red', font = (FONTTYPE, 16))
@@ -479,7 +506,9 @@ if (len(sys.argv) == 2):
 
         reset.place(x = 420, y = 275)
 
+        # Main simulation loop
         root.mainloop()
+<<<<<<< HEAD
 #    elif (arglist[1].lower() == '-nongui'):
 #        print('Running Non-GUI...')
 #        print('\n')
@@ -541,3 +570,71 @@ if (len(sys.argv) == 2):
 #        raise Exception('Invalid command-line argument. Run \'python wwsim.py -help\' for help.');
 #else:
 #    raise Exception('Invalid command-line call. Run \'python wwsim.py -help\' for help.');
+=======
+        #
+    elif (arglist[1].lower() == '-nongui'):
+        print('Running Non-GUI...')
+        print('\n')
+        # RUN SIMULATION WHILE WRITING TO standard output
+        sim = Simulation(ROWS, COLUMNS, 0)
+        sim.generate_simulation()
+        wl = sim.wumpusLoc
+        gl = sim.goldLocation
+        pl = []
+        for i in range(4):
+            for j in range(4):
+                if sim.pits['room'+str(i)+str(j)] is True:
+                    pl.append((i, j))
+        moveCount = 0
+
+        # Print the steps
+        print('START OF SIMULATION')
+        while (sim.terminal_test() is not True):
+            print('------------------------------------------------------------------')
+            print 'Move: ', moveCount
+            print 'Last Action: ', sim.lastMove
+            print('\n')
+            print('Wumpus World Item Locations:')
+            print 'Wumpus Location: ', wl, '   Gold Location: ', gl
+            print 'Pit Locations: ', str(pl)
+            print('\n')
+            print('Agent Info:')
+            print 'Position: ', sim.agentPos, '   Facing: ', sim.agentFacing
+            print 'Has Gold: ', str(sim.hasGold), '   Arrow: ', sim.arrow
+            print('\n')
+            print('Simlulation Current States:')
+            print 'Wumpus Alive: ', str(sim.wumpusAlive), '   Performance: ', sim.score
+            print 'Current Percepts: ', str(sim.percepts['room'+str(sim.agentPos[0])+str(sim.agentPos[1])])
+            # Prompt agent to move
+            sim.move()
+            sim.update_score()
+            moveCount = moveCount + 1
+        # Print final result
+        print('------------------------------------------------------------------')
+        print 'Last Action: ', sim.lastMove
+        print('GAME OVER')
+        print('\n')
+        if sim.lastMove.lower() == 'climb':
+            print('Agent has climbed out of cave.')
+        elif sim.agentPos == sim.wumpusLoc:
+            print('Agent was eaten by the wumpus and died!')
+        else:
+            print('Agent fell into pit and died!')
+        print('\n')
+        print 'Final Performance: ', sim.score
+
+    elif (arglist[1].lower() == '-help'):
+        print('------------------------------------------------------------------')
+        print('This python program runs a simulation of Wumpus World.')
+        print('\n')
+        print('To run the GUI represented version, run the following command:')
+        print('>\tpython wwsim.py -gui')
+        print('\n')
+        print('To run the Non-GUI version, run the following command:')
+        print('>\tpython wwsim.py -nongui')
+        print('------------------------------------------------------------------')
+    else:
+        raise Exception('Invalid command-line argument. Run \'python wwsim.py -help\' for help.');
+else:
+    raise Exception('Invalid command-line call. Run \'python wwsim.py -help\' for help.');
+>>>>>>> origin/master
